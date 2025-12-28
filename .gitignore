@@ -24,13 +24,8 @@ build/
 *.db
 
 # Sensitive or local config
-backend/HELP_SET_PASSWORD.md
-backend/STEP_BY_STEP_FIX.md
+
 backend/URGENT_README.txt
 DATABASE_CONNECTION_CHECK.md
-DATABASE_SETUP.md
-FIXES_APPLIED.md
-QUICK_FIX_PASSWORD.md
 README.md
-SOLUTION.md
-HOW_TO_WORK.md
+
