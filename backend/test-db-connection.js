@@ -36,7 +36,8 @@ async function testConnection() {
     console.log(`✅ Current Database: ${dbRows[0].db || 'None'}\n`);
 
     // Test 3: Check if database exists
-    const [databases] = await connection.execute('SHOW DATABASES LIKE ?', ['skills_management']);
+    // Some MySQL/MariaDB versions reject placeholders in SHOW statements; inline the value instead.
+    const [databases] = await connection.query("SHOW DATABASES LIKE 'skills_management'");
     if (databases.length > 0) {
       console.log('✅ Database "skills_management" exists\n');
     } else {
@@ -47,7 +48,7 @@ async function testConnection() {
 
     // Test 4: Check tables
     console.log('📊 Checking tables...');
-    const [tables] = await connection.execute('SHOW TABLES');
+    const [tables] = await connection.query('SHOW TABLES');
     const expectedTables = ['personnel', 'skills', 'personnel_skills', 'projects', 'project_required_skills'];
     const existingTables = tables.map(row => Object.values(row)[0]);
 
@@ -63,7 +64,7 @@ async function testConnection() {
     console.log('\n📋 Table Structures:');
     for (const table of expectedTables) {
       if (existingTables.includes(table)) {
-        const [columns] = await connection.execute(`DESCRIBE ${table}`);
+        const [columns] = await connection.query(`DESCRIBE ${table}`);
         console.log(`\n   ${table}:`);
         columns.forEach(col => {
           console.log(`      - ${col.Field} (${col.Type})`);
