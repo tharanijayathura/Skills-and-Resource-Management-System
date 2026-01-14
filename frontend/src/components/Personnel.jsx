@@ -100,6 +100,8 @@ export default function Personnel({ showToast }) {
   const update = async (p) => {
     try {
       await put(`/personnel/${p.id}`, { name: p.name, email: p.email, role: p.role, experience_level: p.experience_level });
+      await load(); // Reload the list after update
+      setEditing(null); // Clear editing state
       showToast?.('Personnel updated successfully', 'success');
     } catch (error) {
       showToast?.(error.message || 'Error updating personnel', 'error');
@@ -216,11 +218,18 @@ export default function Personnel({ showToast }) {
                           className="form-input"
                           value={p.name || ''}
                           onChange={e => setList(list.map(x => x.id === p.id ? { ...x, name: e.target.value } : x))}
-                          onBlur={() => { update(list.find(x => x.id === p.id)); setEditing(null); }}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter') {
+                              update(list.find(x => x.id === p.id));
+                            } else if (e.key === 'Escape') {
+                              setEditing(null);
+                              load();
+                            }
+                          }}
                           autoFocus
                         />
                       ) : (
-                        <span onClick={() => setEditing(p)} style={{ cursor: 'pointer' }}>{p.name}</span>
+                        <span>{p.name}</span>
                       )}
                     </td>
                     <td>
@@ -229,10 +238,17 @@ export default function Personnel({ showToast }) {
                           className="form-input"
                           value={p.email || ''}
                           onChange={e => setList(list.map(x => x.id === p.id ? { ...x, email: e.target.value } : x))}
-                          onBlur={() => { update(list.find(x => x.id === p.id)); setEditing(null); }}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter') {
+                              update(list.find(x => x.id === p.id));
+                            } else if (e.key === 'Escape') {
+                              setEditing(null);
+                              load();
+                            }
+                          }}
                         />
                       ) : (
-                        <span onClick={() => setEditing(p)} style={{ cursor: 'pointer' }}>{p.email}</span>
+                        <span>{p.email}</span>
                       )}
                     </td>
                     <td>
@@ -241,10 +257,17 @@ export default function Personnel({ showToast }) {
                           className="form-input"
                           value={p.role || ''}
                           onChange={e => setList(list.map(x => x.id === p.id ? { ...x, role: e.target.value } : x))}
-                          onBlur={() => { update(list.find(x => x.id === p.id)); setEditing(null); }}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter') {
+                              update(list.find(x => x.id === p.id));
+                            } else if (e.key === 'Escape') {
+                              setEditing(null);
+                              load();
+                            }
+                          }}
                         />
                       ) : (
-                        <span onClick={() => setEditing(p)} style={{ cursor: 'pointer' }}>{p.role || '—'}</span>
+                        <span>{p.role || '—'}</span>
                       )}
                     </td>
                     <td>
@@ -252,8 +275,12 @@ export default function Personnel({ showToast }) {
                         <select
                           className="form-select"
                           value={p.experience_level || ''}
-                          onChange={e => setList(list.map(x => x.id === p.id ? { ...x, experience_level: e.target.value } : x))}
-                          onBlur={() => { update(list.find(x => x.id === p.id)); setEditing(null); }}
+                          onChange={e => {
+                            const updated = list.find(x => x.id === p.id);
+                            updated.experience_level = e.target.value;
+                            setList([...list]);
+                            update(updated);
+                          }}
                         >
                           <option value="">Select</option>
                           <option>Junior</option>
@@ -268,8 +295,36 @@ export default function Personnel({ showToast }) {
                     </td>
                     <td>
                       <div className="flex gap-1">
-                        <button onClick={() => select(p)} className="btn btn-sm btn-primary">Skills</button>
-                        <button onClick={() => remove(p.id)} className="btn btn-sm btn-danger">Delete</button>
+                        {editing?.id === p.id ? (
+                          <>
+                            <button 
+                              onClick={() => update(list.find(x => x.id === p.id))} 
+                              className="btn btn-sm btn-success"
+                              title="Save changes"
+                            >
+                              ✓ Save
+                            </button>
+                            <button 
+                              onClick={() => { setEditing(null); load(); }} 
+                              className="btn btn-sm btn-secondary"
+                              title="Cancel editing"
+                            >
+                              ✕ Cancel
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button 
+                              onClick={() => setEditing(p)} 
+                              className="btn btn-sm btn-secondary"
+                              title="Edit personnel info"
+                            >
+                              ✏️ Edit
+                            </button>
+                            <button onClick={() => select(p)} className="btn btn-sm btn-primary">Skills</button>
+                            <button onClick={() => remove(p.id)} className="btn btn-sm btn-danger">Delete</button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -304,12 +359,27 @@ export default function Personnel({ showToast }) {
           </div>
           <div className="form-group">
             <label className="form-label">Role</label>
-            <input
-              className="form-input"
-              placeholder="Frontend Developer"
+            <select
+              className="form-select"
               value={form.role}
               onChange={e => setForm({ ...form, role: e.target.value })}
-            />
+            >
+              <option value="">Select Role</option>
+              <option>Frontend Developer</option>
+              <option>Backend Developer</option>
+              <option>Full Stack Developer</option>
+              <option>Mobile Developer</option>
+              <option>DevOps Engineer</option>
+              <option>UI/UX Designer</option>
+              <option>QA Engineer</option>
+              <option>Data Analyst</option>
+              <option>Business Analyst</option>
+              <option>System Administrator</option>
+              <option>Database Administrator</option>
+              <option>Security Engineer</option>
+              <option>Technical Lead</option>
+              
+            </select>
           </div>
           <div className="form-group">
             <label className="form-label">Experience Level</label>

@@ -22,6 +22,9 @@ app.get('/api/health', (req, res) => {
 
 // Database health checks
 app.use('/api/health', healthRoutes);
+/*Confirm MySQL connection is working
+Debug connection issues
+Prove your backend is stable*/
 
 app.use('/api/personnel', personnelRoutes);
 app.use('/api/skills', skillsRoutes);
@@ -30,7 +33,7 @@ app.use('/api/matching', matchingRoutes);
 
 // Global error handler
 app.use((err, req, res, next) => {
-  console.error('Error:', err); // eslint-disable-line no-console
+  console.error('Error:', err); 
   const status = err.status || 500;
   res.status(status).json({ error: err.message || 'Internal Server Error' });
 });
